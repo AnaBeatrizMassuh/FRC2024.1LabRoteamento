@@ -28,17 +28,27 @@ Primeiro comando necessario para desligar o Network Manager:
 Atribuir  o endereço IP
 
     Computador A configura : sudo ifconfig eno1 172.25.0.2 netmask 255.255.255.0 up
-    Computador B configura : sudo ifconfig eno2 192.168.93.2 netmask 255.255.255.0 up
-    Computador R configura : sudo ifconfig eno2 192.168.93.1 netmask 255.255.255.0 up
+    Computador B configura : sudo ifconfig enp2s0f0 192.168.93.2 netmask 255.255.255.0 up
+    Computador R configura : sudo ifconfig eno1 172.25.0.1 netmask 255.255.255.0 up
+    Computador R configura : sudo ifconfig enp2s0f0 192.168.93.1 netmask 255.255.255.0 up
 
-Comando para repassar o ip nas maquinas:
+Comando para configurar a tabela de rotas:
+
+    Computador A e R configura : sudo route add -net 172.25.0.0 netmask 255.255.255.0 eno1
+    Computador B e R configura : sudo route add -net 192.168.93.0 netmask 255.255.255.0 enp2s0f0
+
+Comando para configurara a maquina R como gateway para A e B:
+    
+    Computador A configura: sudo route add -net 192.168.93.0 netmask 255.255.255.0 gw 172.25.0.1 eno1
+    Computador B configura: sudo route add -net 172.25.0.0 netmask 255.255.255.0 gw 192.168.93.1 enp2s0f0
+
+Comando para repassar o ip na maquina R:
 
     net.ipva4.ip_forward = 1
 
 Comando para listar tabela de rotas:
 
-    netstat -nr
-
+    netstat -nr ou route -n
 
 
 ### B ) Qual a tabela de rotas das máquinas A, B e R?
@@ -47,8 +57,8 @@ Comando para listar tabela de rotas:
 
 | Destino |Roteador | MáscaraGen. | Opções | MSS | Janela | irtt |Iface|
 | ------ | --------- | ------ | --------- | ------ | --------- | ------ | --------- |
-|172.25.0.0 | 0.0.0.0 | 255.255.255.0 | U | 0 |0 | 0 |enx00e04c534458|
-|192.168.93.0 | 172.25.0.1 | 255.255.255.0 | UG | 0 |0 | 0 |enx00e04c534458|
+|172.25.0.0 | 0.0.0.0 | 255.255.255.0 | U | 0 |0 | 0 |eno1|
+|192.168.93.0 | 172.25.0.1 | 255.255.255.0 | UG | 0 |0 | 0 |eno1|
 
 #### Tabela B
 
@@ -62,9 +72,7 @@ Comando para listar tabela de rotas:
 | Destino |Roteador | MáscaraGen. | Opções | MSS | Janela | irtt |Iface|
 | ------ | --------- | ------ | --------- | ------ | --------- | ------ | --------- |
 |172.25.0.0 | 0.0.0.0 | 255.255.255.0 | U | 0 |0 | 0 |eno1|
-|192.168.93.0 | 0.0.0.0 | 255.255.255.0 | U | 0 |0 | 0 |enx00e04c534458 |
-
-
+|192.168.93.0 | 0.0.0.0 | 255.255.255.0 | U | 0 |0 | 0 |enp2s0f0 |
 
 
 
@@ -91,7 +99,6 @@ Comando para repassar o ip nas maquinas:
 Comando para listar tabela de rotas:
 
     netstat -nr
-
 
 
 ### B ) Qual a tabela de rotas das máquinas A, B e R?
@@ -130,25 +137,24 @@ Comando para listar tabela de rotas:
 
 Comandos adicionais necessários na máquina A:
 
-    ip link show
+    ip link show // Exibe uma lista de todas as interfaces de rede no sistema
 
-    sudo ip link set eno1 up
+    sudo ip link set eno1 up // Ativa a interface de rede eno1.
 
-    sudo dhclient eno1 
+    sudo dhclient eno1 // Solicita um endereço IP para a interface eno1 usando o DHCP (Dynamic Host Configuration Protocol).
 
-    sudo sysclt -w net.ipv4.ip_forward=1
+    sudo sysclt -w net.ipv4.ip_forward=1 // Habilita o encaminhamento de pacotes IP entre interfaces de rede no sistema. Isto é necessário para que o sistema funcione como um roteador.
 
-    cat /proc/sys/net/ipv4/ip_forward
+    cat /proc/sys/net/ipv4/ip_forward //  Exibe o valor atual do encaminhamento de IP no sistema. Se o valor for 1, o encaminhamento de IP está ativado; se for 0, está desativado.
 
-    sudo iptables -t nat -A POSTROUTING -o eno1 -j MASQUERADE
+    sudo iptables -t nat -A POSTROUTING -o eno1 -j MASQUERADE // Adiciona uma regra na tabela nat do iptables para mascarar (NAT) o tráfego de saída na interface eno1. O alvo MASQUERADE é usado para mascarar o endereço IP de origem dos pacotes que saem da interface.
 
-    sudo iptables -t nat -L -n -v4
+    sudo iptables -t nat -L -n -v4 // Lista as regras na tabela nat do iptables de maneira detalhada (-v), sem resolução de nomes (-n).
 
-    sudo iptables -t nat -L -n -v4
     
 Maquina B
 
-    sudo route add default gw 192.168.93.1
+    sudo route add default gw 192.168.93.1 // Adiciona uma rota padrão (gateway) para o roteamento de pacotes na tabela de roteamento
 
 Vale ressaltar que nessa questão colocamos a Internet na máquina A. 
 
@@ -181,9 +187,6 @@ Comando para repassar o ip nas maquinas:
 Comando para listar tabela de rotas:
 
     netstat -nr
-
-
-
 
 
 ### B ) Qual a tabela de rotas das máquinas A, B e R?
