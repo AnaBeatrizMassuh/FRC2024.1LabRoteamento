@@ -192,15 +192,15 @@ Comando para listar tabela de rotas:
 
 | Destino |Roteador | MáscaraGen. | Opções | MSS | Janela | irtt |Iface|
 | ------ | --------- | ------ | --------- | ------ | --------- | ------ | --------- |
-|0.0.0.0 | 172.25.0.1 | 0.0.0.0 | UG | 0 |0 | 0 |enx00e04c534458|
+|11.10.0.0 | 0.0.0.0 | 255.255.255.0 | U | 0 |0 | 0 |eno1|
 |172.25.0.0 | 0.0.0.0 | 255.255.255.0 | U | 0 |0 | 0 |enx00e04c534458|
-|192.168.93.0 | 172.25.0.1 | 255.255.255.0 | UG | 0 |0 | 0 |enx00e04c534458|
+|192.168.93.0 | _gateway | 255.255.255.0 | UG | 0 |0 | 0 |enx00e04c534458|
 
 #### Tabela B
 
 | Destino |Roteador | MáscaraGen. | Opções | MSS | Janela | irtt |Iface|
 | ------ | --------- | ------ | --------- | ------ | --------- | ------ | --------- |
-| 0.0.0.0 | 192.168.93.1 | 255.255.255.0 | UG | 0 |0 | 0 |enp2s0f0|
+| 0.0.0.0 | 192.168.93.1 | 0.0.0.0 | UG | 0 |0 | 0 |enp2s0f0|
 |172.25.0.0 | 192.168.93.1 | 255.255.255.0 | UG | 0 |0 | 0 |enp2s0f0|
 |192.168.93.0 | 0.0.0.0 | 255.255.255.0 | U | 0 |0 | 0 |enp2s0f0|
 
@@ -208,6 +208,7 @@ Comando para listar tabela de rotas:
 
 | Destino |Roteador | MáscaraGen. | Opções | MSS | Janela | irtt |Iface|
 | ------ | --------- | ------ | --------- | ------ | --------- | ------ | --------- |
+| 0.0.0.0 | 11.10.0.2 | 0.0.0.0 | UG | 0 |0 | 0 |eth0|
 | 11.10.0.0 | 0.0.0.0 | 255.255.0.0 | U | 0 |0 | 0 |eth0|
 |172.25.0.0 | 0.0.0.0 | 255.255.255.0 | U | 0 |0 | 0 |eno1|
 |192.168.93.0 | 0.0.0.0 | 255.255.255.0 | U | 0 |0 | 0 |enx00e04c534458 |
@@ -220,11 +221,10 @@ Na Maquina R
 
     ip link show
 
-    sudo ip link set [interface de rede] up
+    sudo ip link set eno2 up
 
-    sudo dhclient [interface de rede] 
+    sudo dhclient eno2 
 
-    Configurado 
 
 Maquina R
 
