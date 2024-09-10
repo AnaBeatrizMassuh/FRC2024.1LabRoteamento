@@ -1,6 +1,6 @@
 # Laboratorio sobre Camada de redes  
 
-Data do expérimento 04/09/2024
+Data do experimento 04/09/2024
 
 
 ##  Integrantes
@@ -130,15 +130,25 @@ Comando para listar tabela de rotas:
 
 Comandos adicionais necessários na máquina A:
 
-    cat /proc/sys/net/ipv4/ip_forward
-    cat /etc/resolv.conf
+    ip link show
+
+    sudo ip link set eno1 up
+
+    sudo dhclient eno1 
+
     sudo sysclt -w net.ipv4.ip_forward=1
-    sudo nano /etc/sysctl.conf
+
+    cat /proc/sys/net/ipv4/ip_forward
+
     sudo iptables -t nat -A POSTROUTING -o eno1 -j MASQUERADE
-    iptables -t nat -L -n -b
-    iptables -t nat -L -n -v
-    sudo route add default gw 193.168.93.1
-    sudo dhclient eno1
+
+    sudo iptables -t nat -L -n -v4
+
+    sudo iptables -t nat -L -n -v4
+    
+Maquina B
+
+    sudo route add default gw 192.168.93.1
 
 Vale ressaltar que nessa questão colocamos a Internet na máquina A. 
 
